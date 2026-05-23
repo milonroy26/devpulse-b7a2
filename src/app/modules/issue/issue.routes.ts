@@ -10,4 +10,6 @@ router.get('/', IssueControllers.getAllIssues);
 
 router.get('/:id', IssueControllers.getSingleIssue);
 
+router.patch('/:id/status', authMiddleware('maintainer'), IssueControllers.updateIssueStatus);
+
 export const IssueRoutes = router;

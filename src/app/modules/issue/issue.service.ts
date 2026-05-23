@@ -154,9 +154,45 @@ const getSingleIssueFromDB = async (id: string) => {
     return formattedIssue;
 }
 
+//? update issue
+const updateIssueStatusInDB = async (id: string, status: string) => {
+
+    //? Input status validation
+    const validStatuses = ['open', 'in_progress', 'resolved'];
+    if (!validStatuses.includes(status)) {
+        const error = new Error("Validation Error") as any;
+        error.statusCode = 400;
+        error.errors = `Invalid status. Allowed values are: ${validStatuses.join(', ')}`;
+        throw error;
+    }
+
+    //? Check if the issue is in the database by ID
+    const checkQuery = `SELECT id FROM issues WHERE id = $1`;
+    const checkResult = await pool.query(checkQuery, [id]);
+
+    if (checkResult.rows.length === 0) {
+        const error = new Error("Resource Not Found") as any;
+        error.statusCode = 404;
+        error.errors = `Issue with ID ${id} does not exist.`;
+        throw error;
+    }
+
+    //? Update the issue
+    const updateQuery = `
+        UPDATE issues 
+        SET status = $1, 
+        updated_at = NOW() 
+        WHERE id = $2
+        RETURNING id, title, description, type, status, reporter_id, created_at, updated_at;
+    `;
+
+    const result = await pool.query(updateQuery, [status, id]);
+    return result.rows[0];
+};
 
 export const IssueServices = {
     createIssueIntoDB,
     getAllIssuesFromDB,
-    getSingleIssueFromDB
+    getSingleIssueFromDB,
+    updateIssueStatusInDB,
 };
