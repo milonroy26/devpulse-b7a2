@@ -111,7 +111,52 @@ const getAllIssuesFromDB = async (filters: { status?: string; type?: string; sea
 
 }
 
+//? get single issue
+const getSingleIssueFromDB = async (id: string) => {
+
+    //? database query
+    const query = `
+        SELECT id, 
+        title, 
+        description, 
+        type, 
+        status, 
+        reporter_id, 
+        created_at, 
+        updated_at 
+        FROM issues WHERE id = $1    
+    `;
+    const result = await pool.query(query, [id]);
+    const issue = result.rows[0];
+
+    //? if no issue is found with this ID
+    if (!issue) {
+        const error = new Error("Resource Not found") as any;
+        error.statusCode = 404;
+        error.errors = `Issue with Id &{id} not exist.`;
+        throw error;
+    }
+
+    //? Issue reporter data
+    const userQuery = `
+        SELECT id, name, role FROM users WHERE id = $1
+    `;
+    const userResult = await pool.query(userQuery, [issue.reporter_id]);
+    const user = userResult.rows[0];
+
+    //? replace reporter_id with user object
+    const { reporter_id, ...restOfIssue } = issue;
+    const formattedIssue = {
+        ...restOfIssue,
+        reporter: user || null,
+    };
+
+    return formattedIssue;
+}
+
+
 export const IssueServices = {
     createIssueIntoDB,
-    getAllIssuesFromDB
+    getAllIssuesFromDB,
+    getSingleIssueFromDB
 };
