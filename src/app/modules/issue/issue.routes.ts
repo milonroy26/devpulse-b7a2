@@ -12,4 +12,6 @@ router.get('/:id', IssueControllers.getSingleIssue);
 
 router.patch('/:id/status', authMiddleware('maintainer'), IssueControllers.updateIssueStatus);
 
+router.delete('/:id', authMiddleware('maintainer'), IssueControllers.deleteIssue);
+
 export const IssueRoutes = router;

@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import { IssueServices } from "./issue.service";
 
-//? create issue
+//* create issue
 const createIssue = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { title, description, type } = req.body;
@@ -28,7 +28,7 @@ const createIssue = async (req: Request, res: Response, next: NextFunction) => {
     }
 }
 
-//? get all issues
+//* get all issues
 const getAllIssues = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { status, type, search } = req.query;
@@ -49,7 +49,7 @@ const getAllIssues = async (req: Request, res: Response, next: NextFunction) => 
     }
 }
 
-//? get single issue
+//* get single issue
 const getSingleIssue = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params as { id: string };
@@ -66,7 +66,7 @@ const getSingleIssue = async (req: Request, res: Response, next: NextFunction) =
     }
 }
 
-//? update issue status
+//* update issue status
 const updateIssueStatus = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
@@ -84,9 +84,27 @@ const updateIssueStatus = async (req: Request, res: Response, next: NextFunction
     }
 };
 
+//* Delete issue
+const deleteIssue = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id } = req.params as { id: string };
+
+        await IssueServices.deleteIssueFromDB(id);
+
+        res.status(200).json({
+            success: true,
+            message: 'Issue deleted successfully',
+        })
+    } catch (error) {
+        next(error);
+    }
+}
+
+
 export const IssueControllers = {
     createIssue,
     getAllIssues,
     getSingleIssue,
-    updateIssueStatus
+    updateIssueStatus,
+    deleteIssue
 };

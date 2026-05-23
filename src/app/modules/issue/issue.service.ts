@@ -1,7 +1,7 @@
 import { pool } from "../../../config/db";
 import type { IIssue } from "./issue.interface";
 
-//? create issue
+//* create issue
 const createIssueIntoDB = async (issueData: (IIssue)): Promise<IIssue> => {
     const { title, description, type, reporter_id } = issueData;
 
@@ -41,7 +41,7 @@ const createIssueIntoDB = async (issueData: (IIssue)): Promise<IIssue> => {
     return result.rows[0];
 }
 
-//? get all issues
+//* get all issues
 const getAllIssuesFromDB = async (filters: { status?: string; type?: string; search?: string }) => {
     const { status, type, search } = filters;
 
@@ -111,7 +111,7 @@ const getAllIssuesFromDB = async (filters: { status?: string; type?: string; sea
 
 }
 
-//? get single issue
+//* get single issue
 const getSingleIssueFromDB = async (id: string) => {
 
     //? database query
@@ -154,7 +154,7 @@ const getSingleIssueFromDB = async (id: string) => {
     return formattedIssue;
 }
 
-//? update issue
+//* update issue
 const updateIssueStatusInDB = async (id: string, status: string) => {
 
     //? Input status validation
@@ -190,9 +190,31 @@ const updateIssueStatusInDB = async (id: string, status: string) => {
     return result.rows[0];
 };
 
+//* Delete issue
+const deleteIssueFromDB = async (id: string) => {
+
+    //? Check if the issue is in the database by ID
+    const checkQuery = `SELECT id FROM issues WHERE id = $1`;
+    const checkResult = await pool.query(checkQuery, [id]);
+
+    if (checkResult.rows.length === 0) {
+        const error = new Error("Resource Not Found") as any;
+        error.statusCode = 404;
+        error.errors = `Issue with ID ${id} does not exist.`;
+        throw error;
+    }
+
+    //? Delete the issue
+    const deleteQuery = `DELETE FROM issues WHERE id = $1`;
+    await pool.query(deleteQuery, [id]);
+
+    return null;
+};
+
 export const IssueServices = {
     createIssueIntoDB,
     getAllIssuesFromDB,
     getSingleIssueFromDB,
     updateIssueStatusInDB,
+    deleteIssueFromDB
 };
