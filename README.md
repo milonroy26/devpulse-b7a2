@@ -6,7 +6,7 @@ DevPulse is a robust, lightweight, and scalable backend RESTful API built with a
 
 ## Live Applicatio
 - **Live Server URL:** ``
-
+`https://devpulse-webapp.vercel.app/`
 ---
 
 ## Key Features
@@ -85,7 +85,7 @@ Bash -> npm run dev ```
      ```
 ---
 
-## 📡 API Endpoints Documentation
+## API Endpoints Documentation
 
 All requests interact with the `/api` root path suffix.
 
