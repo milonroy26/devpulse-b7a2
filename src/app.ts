@@ -14,6 +14,13 @@ app.get('/', (req: Request, res: Response) => {
 
 app.use('/api', centralRouter);
 
+app.get('/', (req, res) => {
+    res.status(200).json({
+        success: true,
+        message: "Welcome to DevPulse - Issue Tracker API Server!",
+    });
+});
+
 //? Global Error Handler
 app.use(globalErrorHandler);
 
